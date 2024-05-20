@@ -140,6 +140,9 @@ function renderQuestions() {
         div.appendChild(questionText);
 
         q.options.forEach((option, idx) => {
+            const labelContainer = document.createElement('div');
+            labelContainer.classList.add('label-container');
+
             const label = document.createElement('label');
             label.innerText = option.text;
 
@@ -148,8 +151,9 @@ function renderQuestions() {
             input.name = `question${index}`;
             input.value = option.score;
 
-            label.appendChild(input);
-            div.appendChild(label);
+            label.prepend(input);
+            labelContainer.appendChild(label);
+            div.appendChild(labelContainer);
         });
 
         container.appendChild(div);
