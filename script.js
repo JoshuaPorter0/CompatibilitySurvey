@@ -21,7 +21,7 @@ const questions = [
             { text: "Prefer not to say", score: 5 }
         ]
     },
-    {
+{
         question: "What best describes your social media usage (Instagram, Facebook, and TikTok)?",
         options: [
             { text: "On social media less than 10 mins a day", score: 10 },
@@ -127,6 +127,7 @@ const questions = [
             { text: "Prefer not to say", score: 6 }
         ]
     }
+
 ];
 
 function renderQuestions() {
@@ -149,7 +150,7 @@ function renderQuestions() {
             const input = document.createElement('input');
             input.type = 'radio';
             input.name = `question${index}`;
-            input.value = option.score;
+            input.value = option.text;
 
             label.prepend(input);
             labelContainer.appendChild(label);
@@ -163,17 +164,18 @@ function renderQuestions() {
 function calculateScore() {
     let totalScore = 0;
     let maxScore = 0;
+    const userResponses = {};
 
     questions.forEach((q, index) => {
         const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
         if (selectedOption) {
-            totalScore += parseInt(selectedOption.value);
+            totalScore += q.options.find(option => option.text === selectedOption.value).score;
+            userResponses[`question${index + 1}`] = selectedOption.value;
         }
         maxScore += Math.max(...q.options.map(o => o.score));
     });
 
     const scorePercentage = (totalScore / maxScore) * 100;
-
     let message = `Your score is ${scorePercentage.toFixed(2)}%. `;
     if (scorePercentage > 90) {
         message += "Contact me at: 407-223-8033";
@@ -184,22 +186,27 @@ function calculateScore() {
     }
     alert(message);
 
-    saveResults(scorePercentage);
+    saveResults(scorePercentage, userResponses);
 }
 
-function saveResults(score) {
-    const results = {
-        date: new Date().toISOString(),
-        score: score
-    };
+function saveResults(score, responses) {
+    const form = document.getElementById('surveyForm');
 
-    fetch('https://api.sheetmonkey.io/form/fT5HNMCWzke4PjLuf739GB', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(results)
-    });
+    for (const [question, answer] of Object.entries(responses)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = question;
+        input.value = answer;
+        form.appendChild(input);
+    }
+
+    const scoreInput = document.createElement('input');
+    scoreInput.type = 'hidden';
+    scoreInput.name = 'score';
+    scoreInput.value = score.toFixed(2);
+    form.appendChild(scoreInput);
+
+    form.submit();
 }
 
 document.addEventListener('DOMContentLoaded', renderQuestions);
