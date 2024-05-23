@@ -193,7 +193,7 @@ function saveResults(score) {
         score: score
     };
 
-    fetch('https://api.sheetmonkey.io/v1/sheet/YOUR_SHEET_ID', {
+    fetch('https://api.sheetmonkey.io/form/fT5HNMCWzke4PjLuf739GB', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
